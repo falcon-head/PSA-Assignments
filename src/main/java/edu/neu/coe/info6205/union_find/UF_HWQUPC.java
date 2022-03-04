@@ -8,6 +8,7 @@
 package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -67,7 +68,7 @@ public class UF_HWQUPC implements UF {
      *
      * @return the number of components (between {@code 1} and {@code n})
      */
-    public int components() {
+    public int  components() {
         return count;
     }
 
@@ -83,19 +84,15 @@ public class UF_HWQUPC implements UF {
         int root = p;
         // FIXME
         // Until you reach parent
-        while(root !=  parent[root]) {
+        while (root != parent[root]) {
+            if(pathCompression) {
+                doPathCompression(root);
+            }
             root = parent[root];
         }
-        if (this.pathCompression) {
-            // Attaching subtree to the root
-            while (p != root) {
-                int updateTheTop = parent[p];
-                parent[p] = root;
-                p = updateTheTop;
-            }
-        }
-        // END 
         return root;
+        // END 
+
     }
 
     /**
@@ -182,22 +179,18 @@ public class UF_HWQUPC implements UF {
 
     private void mergeComponents(int i, int j) {
         // FIXME make shorter root point to taller one
-
-        //if roots are equal do nothing
-        // Handle the condition here
-        if(i == j) {
+        int p=find(i);
+        int q=find(j);
+        if (p == q) {
             return;
         }
-
-        // Change the roots
-        if(height[i] < height[j]) {
-            parent[i] = j;
-            height[j] = height[j] + height[i];
+        if (height[p] < height[q]) {
+            updateParent(p, q);
+            updateHeight(q, p);
         } else {
-            parent[j] = i;
-            height[i] = height[i] + height[j];
+            updateParent(q, p);
+            updateHeight(p, q);
         }
-
         // END 
     }
 
@@ -206,10 +199,45 @@ public class UF_HWQUPC implements UF {
      */
     private void doPathCompression(int i) {
         // FIXME update parent to value of grandparent
-        while(i != parent[i]) {
-            parent[i] = parent[parent[i]];
-            i = parent[i];
+        parent[i]=parent[parent[i]];
+        // END
+
+    }
+
+    // adding a main function here
+    public static void main(String[] args)
+    {
+        // parse from argument
+//        int parsedArgument = Integer.parseInt(args[0]);
+//        int parsedArguments = 1000;
+        int[] myIntArray = {50, 100, 200, 400, 800, 1600, 3200, 6400 };
+        for (int i=0; i<myIntArray.length; i++) {
+            UF_HWQUPC unionFind = new UF_HWQUPC(myIntArray[i], true);
+            totalCountGeneration(myIntArray[i]);
         }
-        // END 
+    }
+
+    private static void totalCountGeneration(int parsedArgument) {
+        int totalConnections = 0;
+        int thePairs = 0;
+        Random random = new Random();
+        UF_HWQUPC uniFind = new UF_HWQUPC(parsedArgument);
+        
+        while (uniFind.components() != 1) {
+            int a = (int) (random.nextInt(parsedArgument));
+            int b = (int) (random.nextInt(parsedArgument));
+
+            thePairs++;
+
+            if (!uniFind.connected(a, b)) {
+                uniFind.union(a, b);
+                totalConnections++;
+            }
+
+        }
+        System.out.println("Total number of objects passed " + parsedArgument);
+        System.out.println("Total number of pairs generated " + thePairs);
+        System.out.println("The total connection " + totalConnections);
+
     }
 }
