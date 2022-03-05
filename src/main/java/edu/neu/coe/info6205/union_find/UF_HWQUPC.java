@@ -222,13 +222,27 @@ public class UF_HWQUPC implements UF {
         int thePairs = 0;
         Random random = new Random();
         UF_HWQUPC uniFind = new UF_HWQUPC(parsedArgument);
-        
+
+        // add a for loop to find the relationship
+
+//        for (int i=0; i < parsedArgument; i ++) {
+//            while (uniFind.components() != 1) {
+//                int a = (int) (random.nextInt(parsedArgument));
+//                int b = (int) (random.nextInt(parsedArgument));
+//                thePairs++;
+//                if (!uniFind.connected(a, b)) {
+//                    uniFind.union(a, b);
+//                    System.out.println("(" + a + "," + b + ")");
+//                    totalConnections++;
+//                }
+//
+//            }
+//        }
+
         while (uniFind.components() != 1) {
             int a = (int) (random.nextInt(parsedArgument));
             int b = (int) (random.nextInt(parsedArgument));
-
             thePairs++;
-
             if (!uniFind.connected(a, b)) {
                 uniFind.union(a, b);
                 totalConnections++;
